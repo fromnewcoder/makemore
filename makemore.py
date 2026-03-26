@@ -15,16 +15,20 @@ class MyDataSet:
             self.itos[i] = ch
         #print(self.stoi)   
   
-        counts = torch.zeros(27,27)
+        counts = torch.ones(27, 27)
 
         for name in self._names[:5]:
             print(name)
             first = "."
-            for i,next in enumerate(name + "."):
-                counts[self.stoi[first], self.stoi[next]] += 1
-                print(f"{first} --> {next}")
-                first = next
-        #print(counts)
+            for i,ch in enumerate(name + "."):
+                counts[self.stoi[first], self.stoi[ch]] += 1
+                print(f"{first} --> {ch}")
+                first = ch
+
+        row_sums = counts.sum(dim = 1, keepdim=True)
+        print(row_sums)
+        probs = counts/row_sums
+        print(probs)
 
 
 
