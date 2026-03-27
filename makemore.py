@@ -13,7 +13,7 @@ class MyDataSet:
     
         self.counts = torch.ones(27, 27)
 
-        for name in self._names[:]:
+        for name in self._names:
             #print(name)
             nameWithStartEnd = "." + name + "."
             for ch1, ch2 in zip(nameWithStartEnd, nameWithStartEnd[1:]):
@@ -22,14 +22,17 @@ class MyDataSet:
 
         self.probs = self.counts / self.counts.sum(dim = 1, keepdim=True)
         g = torch.Generator().manual_seed(2147483647)
-        pname = ""
-        while True:
-            parr = torch.multinomial(self.probs, num_samples=1, replacement=True, generator=g)
-            pch = self.itos[parr[0].item()]
-            if pch == '.':
-                break
-            pname += pch
-        print(pname)
+        
+        ix = 0
+        for i in range(5):
+            out = []
+            while True:
+                p = self.probs[ix].float()
+                ix = torch.multinomial(p, num_samples=1, replacement=True, generator=g).item()
+                out.append(self.itos[ix])
+                if ix == 0 :
+                    break
+            print(''.join(out))
         
 
         #print(probs)
