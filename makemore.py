@@ -11,7 +11,7 @@ class MyDataSet:
         self.stoi = {ch: i for i, ch in enumerate(['.'] + chars)}
         self.itos = {i: ch for ch, i in self.stoi.items()}
     
-        self.counts = torch.ones(27, 27)
+        self.counts = torch.zeros(27, 27, dtype= torch.int32)
 
         for name in self._names:
             #print(name)
@@ -19,15 +19,18 @@ class MyDataSet:
             for ch1, ch2 in zip(nameWithStartEnd, nameWithStartEnd[1:]):
                 self.counts[self.stoi[ch1], self.stoi[ch2]] += 1
                 #print(f"{ch1} --> {ch2}")
-
-        self.probs = self.counts / self.counts.sum(dim = 1, keepdim=True)
+       
+        #self.probs = self.counts / self.counts.sum(dim = 1, keepdim=True)
+        #print(f"{[f'{x:.4f}' for x in self.probs[0]]}")
         g = torch.Generator().manual_seed(2147483647)
-        
+        #p = torch.rand(3, generator = g)
+        #print(torch.multinomial(p, num_samples=100, replacement=True, generator=g))
         ix = 0
         for i in range(5):
             out = []
             while True:
-                p = self.probs[ix].float()
+                p = self.counts[ix].float()
+                p = p / p.sum()
                 ix = torch.multinomial(p, num_samples=1, replacement=True, generator=g).item()
                 out.append(self.itos[ix])
                 if ix == 0 :
